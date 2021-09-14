@@ -4,11 +4,12 @@ using System.Data.Common;
 using MySqlConnector;
 using Npgsql;
 
-namespace ChadWrapperMake
+namespace ChadWrapper
 {
     class Global
     {
         public static bool Debug;
+        public static APIServer ApiServer;
         public static string CodeSigningPrivateKey;
 
         public static NpgsqlConnectionStringBuilder ChadDBConnectionBuilder;
@@ -20,12 +21,6 @@ namespace ChadWrapperMake
             {
                 Console.WriteLine("Loading debug environment file...");
                 DotEnv.Load("debug.env");
-            }
-
-            if(!Utils.IsStringSafe(Environment.GetEnvironmentVariable("CHADWRAPPER_DB_NAME")))
-            {
-                Console.WriteLine("Choose a valid database name!");
-                return;
             }
 
             BoincDBConnectionBuilder = new MySqlConnectionStringBuilder()
@@ -44,10 +39,6 @@ namespace ChadWrapperMake
                 Password = Environment.GetEnvironmentVariable("CHADWRAPPER_DB_PASS"),
                 Database = Environment.GetEnvironmentVariable("CHADWRAPPER_DB_NAME")
             };
-
-            Console.WriteLine("Gathering private key data...");
-            string privateKeyPath = Environment.GetEnvironmentVariable("CODE_SIGN_PRIVATE_PATH");
-            CodeSigningPrivateKey = File.ReadAllText(privateKeyPath);
         }
     }
 }
