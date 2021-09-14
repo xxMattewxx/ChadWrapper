@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="tables.sql" />
+    <None Remove="Resources\tables.sql" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="tables.sql" />
+    <EmbeddedResource Include="Resources\tables.sql" />
   </ItemGroup>
 
   <ItemGroup>

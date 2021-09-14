@@ -1,1 +1,0 @@
-﻿CREATE TABLE "Config" ("Key" TEXT PRIMARY KEY, "Value" TEXT);

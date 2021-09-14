@@ -4,7 +4,7 @@ using System.Data.Common;
 using System.IO;
 using System.Reflection;
 
-namespace ChadWrapperMake.Data
+namespace ChadWrapper.Data
 {
     class DatabaseManager
     {
@@ -42,7 +42,7 @@ namespace ChadWrapperMake.Data
 
                 using var cmd = connection.CreateCommand();
 
-                cmd.CommandText = Utils.GetFromResources("ChadWrapperMake.Resources.tables.sql");
+                cmd.CommandText = Utils.GetFromResources("ChadWrapperMake.tables.sql");
                 cmd.ExecuteNonQuery();
             }
             catch(Exception e)
