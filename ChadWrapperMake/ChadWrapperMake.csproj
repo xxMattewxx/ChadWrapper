@@ -6,21 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Global.cs~RF2eb4a6e4.TMP" />
-    <None Remove="Resources\tables.sql" />
     <None Remove="tables.sql" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="tables.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="tables.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <EmbeddedResource Include="tables.sql" />
   </ItemGroup>
 
   <ItemGroup>

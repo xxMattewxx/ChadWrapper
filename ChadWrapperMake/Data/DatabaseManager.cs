@@ -2,6 +2,7 @@
 using Npgsql;
 using System.Data.Common;
 using System.IO;
+using System.Reflection;
 
 namespace ChadWrapperMake.Data
 {
@@ -40,8 +41,8 @@ namespace ChadWrapperMake.Data
                 connection.Open();
 
                 using var cmd = connection.CreateCommand();
-                cmd.CommandText = File.ReadAllText("tables.sql");
 
+                cmd.CommandText = Utils.GetFromResources("ChadWrapperMake.tables.sql");
                 cmd.ExecuteNonQuery();
             }
             catch(Exception e)
