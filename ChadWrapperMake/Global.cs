@@ -23,10 +23,7 @@ namespace ChadWrapperMake
             }
 
             if(!Utils.IsStringSafe(Environment.GetEnvironmentVariable("CHADWRAPPER_DB_NAME")))
-            {
-                Console.WriteLine("Choose a valid database name!");
-                return;
-            }
+                throw new Exception("Choose a valid database name!");
 
             BoincDBConnectionBuilder = new MySqlConnectionStringBuilder()
             {
