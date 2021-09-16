@@ -41,6 +41,15 @@ namespace ChadWrapperMake
                 Console.WriteLine("Could not save the private key!");
                 return;
             }
+
+            ConfigEntry isSetup = new ConfigEntry();
+            isSetup.Key = "IS_SETUP";
+
+            if (!isSetup.Save())
+            {
+                Console.WriteLine("Could not save the init flag!");
+                return;
+            }
         }
     }
 }

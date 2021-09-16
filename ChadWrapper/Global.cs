@@ -10,7 +10,7 @@ namespace ChadWrapper
     {
         public static bool Debug;
         public static APIServer ApiServer;
-        public static string CodeSigningPrivateKey;
+        public static string BinariesFolder = "./binaries/";
 
         public static NpgsqlConnectionStringBuilder ChadDBConnectionBuilder;
         public static MySqlConnectionStringBuilder BoincDBConnectionBuilder;
@@ -22,6 +22,9 @@ namespace ChadWrapper
                 Console.WriteLine("Loading debug environment file...");
                 DotEnv.Load("debug.env");
             }
+
+            if (!Directory.Exists(BinariesFolder))
+                Directory.CreateDirectory(BinariesFolder);
 
             BoincDBConnectionBuilder = new MySqlConnectionStringBuilder()
             {

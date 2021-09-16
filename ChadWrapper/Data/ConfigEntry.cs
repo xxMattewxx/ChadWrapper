@@ -2,7 +2,7 @@
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 
-namespace ChadWrapperMake.Data
+namespace ChadWrapper.Data
 {
     class ConfigEntry
     {

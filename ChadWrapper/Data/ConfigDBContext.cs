@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChadWrapperMake.Data
+namespace ChadWrapper.Data
 {
     class ConfigDBContext : DbContext
     {
