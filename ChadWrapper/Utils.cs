@@ -17,12 +17,7 @@ namespace ChadWrapper
             byte[] buffer = new byte[length];
             rng.GetNonZeroBytes(buffer);
 
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < buffer.Length; i++)
-            {
-                sb.Append(buffer[i].ToString("X2"));
-            }
-            return sb.ToString();
+            return GenerateHexString(buffer);
         }
 
         public static string SHA256File(string filePath)
@@ -32,6 +27,24 @@ namespace ChadWrapper
 
             byte[] hash = SHA256.ComputeHash(fileStream);
             return BitConverter.ToString(hash).Replace("-", String.Empty).ToLower();
+        }
+
+        public static byte[] CalculateMD5(string filePath)
+        {
+            using MD5 md5 = MD5.Create();
+            using FileStream fileStream = File.OpenRead(filePath);
+
+            return md5.ComputeHash(fileStream);
+        }
+
+        public static string GenerateHexString(byte[] bytes)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                sb.Append(bytes[i].ToString("X2"));
+            }
+            return sb.ToString();
         }
 
         public static long ConvertToUnixTimestamp(DateTime date)

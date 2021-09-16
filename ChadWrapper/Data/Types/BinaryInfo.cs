@@ -1,4 +1,5 @@
 ﻿using ChadWrapper.Boinc;
+using ChadWrapper.Boinc.Crypto;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +18,7 @@ namespace ChadWrapper.Data.Types
         public string BinaryURL { get; set; }
         public string FileHash { get; set; }
         public Int64 FileSize { get; set; }
-
+        public string FileSignature { get; set; }
         /* 
              Returns 0 in case of an exception (couldn't connect to the server, don't have permission to write, etc)
              1 in case of a success
@@ -51,16 +52,35 @@ namespace ChadWrapper.Data.Types
             }
         }
 
+        public string GetMD5()
+        {
+            try
+            {
+                var url = new Uri(BinaryURL);
+                var fileName = Global.BinariesFolder + url.Segments.Last();
+                return Utils.GenerateHexString(Utils.CalculateMD5(fileName));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public BoincFileInfo ToBoincFormat()
         {
             BoincFileInfo ret = new BoincFileInfo();
             var url = new Uri(BinaryURL);
             ret.ByteCount = FileSize;
             ret.IsExecutable = "";
-            ret.FileSignature = " ";
+            ret.FileSignature = FileSignature;
             ret.URL = BinaryURL;
             ret.Name = url.Segments.Last();
             return ret;
+        }
+
+        public void Sign(string key)
+        {
+            FileSignature = Crypto.GetFileSignature(GetMD5(), key);
         }
     }
 }

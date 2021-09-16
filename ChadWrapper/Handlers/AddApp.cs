@@ -10,6 +10,7 @@ using ChadWrapper.Data.Types;
 using ChadWrapper.Data;
 using ChadWrapper.Boinc;
 using System.Linq;
+using ChadWrapper.Boinc.Crypto;
 
 namespace ChadWrapper.Handlers
 {
@@ -53,15 +54,8 @@ namespace ChadWrapper.Handlers
 
             /* DownloadFiles should check the SHA256 hash of each binary provided to ensure it matches, as a checksum */
             /* This function should also populate the binaries missing data such as byte length */
-            if (!DownloadFiles(request.Binaries, writer))
+            if (!DownloadFiles(request.Binaries, writer, codeSigningKey.Value))
                 return;
-
-            /* TODO Port BOINC code to C#
-            if (!Utils.SignFiles(request.Binaries, codeSigningKey))
-            {
-                writer.WriteLine(new BaseResponse() { Message = "Failure signing downloaded binaries." }.ToJSON());
-                return;
-            }*/
 
             long appID = AddAppToBOINC(request, writer);
             if (appID == -1)
@@ -92,7 +86,7 @@ namespace ChadWrapper.Handlers
             return true;
         }
 
-        public static bool DownloadFiles(List<BinaryInfo> binaries, StreamWriter writer)
+        public static bool DownloadFiles(List<BinaryInfo> binaries, StreamWriter writer, string codeSigningKey)
         {
             foreach (var binary in binaries)
             {
@@ -102,11 +96,14 @@ namespace ChadWrapper.Handlers
                     writer.WriteLine(new BaseResponse() { Message = "SHA256 hash mismatch for one of the files downloaded." }.ToJSON());
                     return false;
                 }
-                else if(result != 1)
+                else if (result != 1)
                 {
                     writer.WriteLine(new BaseResponse() { Message = "An unknown error occurred when downloading a file." }.ToJSON());
                     return false;
                 }
+                
+                //file passed, generate a signature
+                binary.Sign(codeSigningKey);
             }
             return true;
         }
@@ -138,7 +135,10 @@ namespace ChadWrapper.Handlers
             foreach (BinaryInfo binary in request.Binaries)
             {
                 string xml = GenerateXML(binary, request.Codename);
-                Console.WriteLine("({0})", xml.ToString());
+                if(!BoincDatabaseManager.AddAppVersion(appID, binary.VersionNumber, 1, xml.ToString())) {
+                    writer.WriteLine(new BaseResponse() { Message = "Failed to add app version." }.ToJSON());
+                    return false;
+                }
             }
             return true;
         }
