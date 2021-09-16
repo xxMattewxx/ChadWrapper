@@ -14,9 +14,15 @@ namespace ChadWrapper.Data
             {
                 return ConfigEntry.Get("IS_SETUP") != null;
             }
+            catch (PostgresException e)
+            {
+                if (e.SqlState == PostgresErrorCodes.InvalidPassword)
+                    throw new Exception("Invalid auth provided for Postgres!");
+
+                return false;
+            }
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 return false;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using ChadWrapperMake.Data;
 
 namespace ChadWrapperMake
@@ -14,6 +15,20 @@ namespace ChadWrapperMake
             }
 
             Global.Load();
+
+            for(int i = 0; !DatabaseManager.IsDBRunning(); i++)
+            {
+                if(i == 0)
+                    Console.WriteLine("Waiting for the Postgres server to start.");
+
+                if (i == 60)
+                {
+                    Console.WriteLine("Exceeded timeout waiting for the Postgres server to start.");
+                    return;
+                }
+
+                Thread.Sleep(1000);
+            }
 
             if(DatabaseManager.IsSetup())
             {

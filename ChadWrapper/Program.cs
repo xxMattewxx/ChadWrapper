@@ -2,6 +2,7 @@
 using ChadWrapper.Data;
 using Newtonsoft.Json;
 using System;
+using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -17,6 +18,20 @@ namespace ChadWrapper
             }
 
             Global.Load();
+
+            for (int i = 0; !DatabaseManager.IsSetup(); i++)
+            {
+                if(i == 0)
+                    Console.WriteLine("Waiting for the database to be setup.");
+
+                if (i == 60)
+                {
+                    Console.WriteLine("Exceeded timeout waiting for the database to be setup.");
+                    return;
+                }
+
+                Thread.Sleep(1000);
+            }
 
             if (!DatabaseManager.IsSetup())
             {
