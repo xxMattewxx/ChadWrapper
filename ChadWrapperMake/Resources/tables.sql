@@ -1,1 +1,2 @@
 ﻿CREATE TABLE "Config" ("Key" TEXT PRIMARY KEY, "Value" TEXT);
+CREATE TABLE "Input" ("ID" SERIAL PRIMARY KEY, "InputData" TEXT);

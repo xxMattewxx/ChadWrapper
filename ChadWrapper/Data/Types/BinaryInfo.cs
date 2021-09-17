@@ -1,5 +1,4 @@
 ﻿using ChadWrapper.Boinc;
-using ChadWrapper.Boinc.Crypto;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +18,19 @@ namespace ChadWrapper.Data.Types
         public string FileHash { get; set; }
         public Int64 FileSize { get; set; }
         public string FileSignature { get; set; }
+
+        public bool IsValid()
+        {
+            if (BinaryURL == null || !Uri.TryCreate(BinaryURL, UriKind.RelativeOrAbsolute, out _)) return false;
+            if (Version == null || Version.Length < 1) return false;
+            if (Platform == null || Platform.Length < 1) return false;
+            if (VersionNumber < 1) return false;
+            if (FileHash == null) return false;
+            if (FileSignature == null) return false;
+
+            return true;
+        }
+
         /* 
              Returns 0 in case of an exception (couldn't connect to the server, don't have permission to write, etc)
              1 in case of a success
@@ -76,11 +88,6 @@ namespace ChadWrapper.Data.Types
             ret.URL = BinaryURL;
             ret.Name = url.Segments.Last();
             return ret;
-        }
-
-        public void Sign(string key)
-        {
-            FileSignature = Crypto.GetFileSignature(GetMD5(), key);
         }
     }
 }

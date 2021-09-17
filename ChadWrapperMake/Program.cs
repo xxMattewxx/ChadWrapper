@@ -14,6 +14,7 @@ namespace ChadWrapperMake
                 if (arg.ToLower() == "--debug") Global.Debug = true;
             }
 
+            Global.Debug = true;
             Global.Load();
 
             for(int i = 0; !DatabaseManager.IsDBRunning(); i++)
@@ -45,15 +46,6 @@ namespace ChadWrapperMake
             if(!DatabaseManager.CreateTables())
             {
                 Console.WriteLine("Could not create the required tables!");
-                return;
-            }
-
-            ConfigEntry codeSigningKey = new ConfigEntry();
-            codeSigningKey.Key = "CODE_SIGNING_PRIVATE";
-            codeSigningKey.Value = Global.CodeSigningPrivateKey;
-            
-            if(!codeSigningKey.Save()) {
-                Console.WriteLine("Could not save the private key!");
                 return;
             }
 

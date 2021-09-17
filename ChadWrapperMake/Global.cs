@@ -9,7 +9,6 @@ namespace ChadWrapperMake
     class Global
     {
         public static bool Debug;
-        public static string CodeSigningPrivateKey;
 
         public static NpgsqlConnectionStringBuilder ChadDBConnectionBuilder;
         public static MySqlConnectionStringBuilder BoincDBConnectionBuilder;
@@ -41,10 +40,6 @@ namespace ChadWrapperMake
                 Password = Environment.GetEnvironmentVariable("CHADWRAPPER_DB_PASS"),
                 Database = Environment.GetEnvironmentVariable("CHADWRAPPER_DB_NAME")
             };
-
-            Console.WriteLine("Gathering private key data...");
-            string privateKeyPath = Environment.GetEnvironmentVariable("CODE_SIGN_PRIVATE_PATH");
-            CodeSigningPrivateKey = File.ReadAllText(privateKeyPath);
         }
     }
 }

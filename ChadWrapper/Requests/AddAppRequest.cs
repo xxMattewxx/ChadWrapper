@@ -9,15 +9,19 @@ namespace ChadWrapper.Requests
     {
         public string Codename;
         public string FriendlyName;
-        public string DecryptionKey;
         public List<BinaryInfo> Binaries;
 
         public bool IsValid()
         {
             if (Codename == null) return false;
             if (FriendlyName == null) return false;
-            if (DecryptionKey == null) return false;
             if (Binaries == null || Binaries.Count == 0) return false;
+
+            foreach(var binary in Binaries)
+            {
+                if (!binary.IsValid())
+                    return false;
+            }
 
             return true;
         }
