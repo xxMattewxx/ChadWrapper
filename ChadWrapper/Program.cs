@@ -17,6 +17,7 @@ namespace ChadWrapper
                 if (arg.ToLower() == "--debug") Global.Debug = true;
             }
 
+            Global.Debug = true;
             Global.Load();
 
             for (int i = 0; !DatabaseManager.IsSetup(); i++)
@@ -33,16 +34,11 @@ namespace ChadWrapper
                 Thread.Sleep(1000);
             }
 
-            if (!DatabaseManager.IsSetup())
-            {
-                Console.WriteLine("Could not connect to the DB.");
-                return;
-            }
-
             APIServer api = new APIServer(80);
 
             api.SetBaseURL("/chadwrapper");
             api.AddAction("/addapp", Handlers.AddApp.ProcessContext);
+            api.AddAction("/getproject", Handlers.GetProjectInfo.ProcessContext);
 
             Global.ApiServer = api;
             api.Listen();

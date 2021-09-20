@@ -107,12 +107,14 @@ namespace ChadWrapper.Handlers
             else if (appID == -2)
             {
                 Console.WriteLine("App {0} already exists in DB.", request.Codename);
-                appID = BoincDatabaseManager.GetAppID(request.Codename);
-                if(appID == -1)
+                AppInfo app = AppInfo.GetFromCodename(request.Codename);
+                if (app == null)
                 {
                     writer.WriteLine(new BaseResponse() { Message = "Could not retrieve existing app info from the BOINC DB." }.ToJSON());
                     return -1;
                 }
+                else
+                    appID = app.ID;
             }
 
             return appID;

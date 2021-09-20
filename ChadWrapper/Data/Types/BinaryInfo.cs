@@ -1,4 +1,5 @@
 ﻿using ChadWrapper.Boinc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace ChadWrapper.Data.Types
 {
@@ -87,6 +89,29 @@ namespace ChadWrapper.Data.Types
             ret.FileSignature = FileSignature;
             ret.URL = BinaryURL;
             ret.Name = url.Segments.Last();
+            return ret;
+        }
+
+        public static BinaryInfo FromBoincXML(string xml)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            try
+            {
+                doc.LoadXml("<root>" + xml + "</root>");
+            }
+            catch(XmlException e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+
+            BinaryInfo ret = new BinaryInfo();
+            var fileInfo = doc.DocumentElement.SelectSingleNode("file_info");
+            ret.BinaryURL = fileInfo.SelectSingleNode("url").InnerText;
+
+            var appVersion = doc.DocumentElement.SelectSingleNode("app_version");
+            ret.VersionNumber = Convert.ToInt32(appVersion.SelectSingleNode("version_num").InnerText);
             return ret;
         }
     }

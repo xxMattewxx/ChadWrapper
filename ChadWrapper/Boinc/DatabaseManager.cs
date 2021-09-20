@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using ChadWrapper.Data.Types;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,22 +72,64 @@ namespace ChadWrapper.Boinc
             return reader.GetInt32(0);
         }
 
-        public static int GetAppID(string codename)
+        public static string GetPlatformName(int platformID)
         {
             using MySqlConnection connection = new MySqlConnection(Global.BoincDBConnectionBuilder.ConnectionString);
             connection.Open();
 
             using var command = connection.CreateCommand();
-            command.CommandText = "SELECT id FROM app WHERE name = @name LIMIT 1;";
-            command.Parameters.AddWithValue("@name", codename);
+            command.CommandText = "SELECT name FROM platform WHERE id = @id LIMIT 1;";
+            command.Parameters.AddWithValue("@id", platformID);
 
             using var reader = command.ExecuteReader();
             reader.Read();
 
             if (!reader.HasRows)
-                return -1;
+                return null;
 
-            return reader.GetInt32(0);
+            return reader.GetString(0);
+        }
+
+        public static List<BinaryInfo> GetAppBinaries(int appID)
+        {
+            try
+            {
+                using MySqlConnection connection = new MySqlConnection(Global.BoincDBConnectionBuilder.ConnectionString);
+                connection.Open();
+
+                using var command = connection.CreateCommand();
+                command.CommandText = "SELECT LENGTH(xml_doc), xml_doc, platformid FROM app_version WHERE appid = @appID;";
+                command.Parameters.AddWithValue("@appID", appID);
+
+                using var reader = command.ExecuteReader();
+                reader.Read();
+
+                if (!reader.HasRows)
+                    return null;
+
+                List<BinaryInfo> ret = new List<BinaryInfo>();
+                do
+                {
+                    int length = reader.GetInt32(0);
+                    byte[] buffer = new byte[length];
+
+                    if (reader.GetBytes(1, 0, buffer, 0, length) != length)
+                        return null;
+
+                    string xml = Encoding.UTF8.GetString(buffer);
+                    BinaryInfo binaryInfo = BinaryInfo.FromBoincXML(xml);
+                    binaryInfo.Platform = GetPlatformName(reader.GetInt32(2));
+                    ret.Add(binaryInfo);
+                }
+                while (reader.Read());
+
+                return ret;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
         }
     }
 }

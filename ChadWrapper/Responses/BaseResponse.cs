@@ -14,7 +14,10 @@ namespace ChadWrapper.Responses
 
         public string ToJSON()
         {
-            return JsonConvert.SerializeObject(this);
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+            settings.NullValueHandling = NullValueHandling.Ignore;
+            return JsonConvert.SerializeObject(this, settings);
         }
     }
 }
