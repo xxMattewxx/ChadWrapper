@@ -17,7 +17,6 @@ namespace ChadWrapper
                 if (arg.ToLower() == "--debug") Global.Debug = true;
             }
 
-            Global.Debug = true;
             Global.Load();
 
             for (int i = 0; !DatabaseManager.IsSetup(); i++)
