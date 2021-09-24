@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace ChadWrapper.Responses
 {
-    class AddAppResponse : BaseResponse
+    class AddBinaryResponse : BaseResponse
     {
-        public Int64 AppID { get; set; }
+        public BinaryInfo Binary { get; set; }
     }
 }

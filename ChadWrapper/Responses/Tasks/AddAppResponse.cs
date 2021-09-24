@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChadWrapper.Responses
+namespace ChadWrapper.Responses.Tasks
 {
-    class AddAppResponse : BaseResponse
+    class AddSequentialResponse : BaseResponse
     {
-        public Int64 AppID { get; set; }
+        public Int64 TasksCount { get; set; }
     }
 }

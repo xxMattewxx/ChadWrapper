@@ -13,23 +13,22 @@ namespace ChadWrapper.Data.Types
 {
     class BinaryInfo
     {
-        public string Version { get; set; }
         public string Platform { get; set; }
         public int VersionNumber { get; set; }
         public string BinaryURL { get; set; }
         public string FileHash { get; set; }
         public Int64 FileSize { get; set; }
         public string FileSignature { get; set; }
+        public string HardwareAccelerator { get; set; }
 
         public bool IsValid()
         {
             if (BinaryURL == null || !Uri.TryCreate(BinaryURL, UriKind.RelativeOrAbsolute, out _)) return false;
-            if (Version == null || Version.Length < 1) return false;
             if (Platform == null || Platform.Length < 1) return false;
             if (VersionNumber < 1) return false;
             if (FileHash == null) return false;
             if (FileSignature == null) return false;
-
+            if (HardwareAccelerator == null) return false;
             return true;
         }
 

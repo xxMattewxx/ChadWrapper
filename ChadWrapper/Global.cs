@@ -11,6 +11,7 @@ namespace ChadWrapper
         public static bool Debug;
         public static APIServer ApiServer;
         public static string BinariesFolder = "./binaries/";
+        public static string AlertsWebhookURL;
 
         public static NpgsqlConnectionStringBuilder ChadDBConnectionBuilder;
         public static MySqlConnectionStringBuilder BoincDBConnectionBuilder;
@@ -25,6 +26,8 @@ namespace ChadWrapper
 
             if (!Directory.Exists(BinariesFolder))
                 Directory.CreateDirectory(BinariesFolder);
+
+            AlertsWebhookURL = Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL");
 
             BoincDBConnectionBuilder = new MySqlConnectionStringBuilder()
             {

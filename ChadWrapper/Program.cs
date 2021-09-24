@@ -17,6 +17,7 @@ namespace ChadWrapper
                 if (arg.ToLower() == "--debug") Global.Debug = true;
             }
 
+            Global.Debug = true;
             Global.Load();
 
             for (int i = 0; !DatabaseManager.IsSetup(); i++)
@@ -37,7 +38,10 @@ namespace ChadWrapper
 
             api.SetBaseURL("/chadwrapper");
             api.AddAction("/addapp", Handlers.AddApp.ProcessContext);
+            api.AddAction("/addbinary", Handlers.AddBinary.ProcessContext);
             api.AddAction("/getproject", Handlers.GetProjectInfo.ProcessContext);
+
+            api.AddAction("/tasks/gensequential", Handlers.Tasks.GenSequential.ProcessContext);
 
             Global.ApiServer = api;
             api.Listen();

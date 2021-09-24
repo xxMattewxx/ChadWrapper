@@ -53,5 +53,15 @@ namespace ChadWrapper
             TimeSpan diff = date.ToUniversalTime() - origin;
             return (long)Math.Floor(diff.TotalSeconds);
         }
+
+        static string SafeAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        public static bool IsSafeString(string str)
+        {
+            foreach (char aux in str)
+                if (!SafeAlphabet.Contains(aux))
+                    return false;
+
+            return true;
+        }
     }
 }

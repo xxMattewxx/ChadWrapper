@@ -3,26 +3,29 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
-namespace ChadWrapper.Requests
+namespace ChadWrapper.Requests.Tasks
 {
-    class AddAppRequest
+    class AddSequentialRequest
     {
         public string Codename { get; set; }
-        public string FriendlyName { get; set; }
+        public Int64 Start { get; set; }
+        public Int64 End { get; set; }
+        public Int64 TaskSize { get; set; }
 
         public bool IsValid()
         {
             if (Codename == null || !Utils.IsSafeString(Codename)) return false;
-            if (FriendlyName == null || Codename.Length == 0) return false;
+            if (End < Start) return false;
+            if (TaskSize <= 0) return false;
 
             return true;
         }
 
-        public static AddAppRequest FromJSON(string jsonStr)
+        public static AddSequentialRequest FromJSON(string jsonStr)
         {
             try
             {
-                return JsonConvert.DeserializeObject<AddAppRequest>(jsonStr);
+                return JsonConvert.DeserializeObject<AddSequentialRequest>(jsonStr);
             }
             catch (Exception e)
             {

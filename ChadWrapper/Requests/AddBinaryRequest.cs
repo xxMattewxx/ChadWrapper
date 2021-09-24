@@ -5,24 +5,24 @@ using System.Collections.Generic;
 
 namespace ChadWrapper.Requests
 {
-    class AddAppRequest
+    class AddBinaryRequest
     {
-        public string Codename { get; set; }
-        public string FriendlyName { get; set; }
+        public string Codename;
+        public BinaryInfo Binary;
 
         public bool IsValid()
         {
             if (Codename == null || !Utils.IsSafeString(Codename)) return false;
-            if (FriendlyName == null || Codename.Length == 0) return false;
+            if (Binary == null || !Binary.IsValid()) return false;
 
             return true;
         }
 
-        public static AddAppRequest FromJSON(string jsonStr)
+        public static AddBinaryRequest FromJSON(string jsonStr)
         {
             try
             {
-                return JsonConvert.DeserializeObject<AddAppRequest>(jsonStr);
+                return JsonConvert.DeserializeObject<AddBinaryRequest>(jsonStr);
             }
             catch (Exception e)
             {

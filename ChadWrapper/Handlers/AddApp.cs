@@ -10,6 +10,7 @@ using ChadWrapper.Data.Types;
 using ChadWrapper.Data;
 using ChadWrapper.Boinc;
 using System.Linq;
+using ChadWrapper.Discord;
 
 namespace ChadWrapper.Handlers
 {
@@ -33,67 +34,24 @@ namespace ChadWrapper.Handlers
                 return;
             }
 
-            /* TODO IMPLEMENT AUTH UserInfo user = UserInfo.GetFromAPIKey(APIKey);
-            if (user == null || !user.CanAddTasks())
-            {
-                writer.WriteLine(new BaseResponse() { Message = "API Key not authorized!" }.ToJSON());
-                return;
-            }*/
-
-            if (!CheckPlatformsExist(request.Binaries, writer))
-                return;
-
-            /* DownloadFiles should check the SHA256 hash of each binary provided to ensure it matches, as a checksum */
-            /* This function should also populate the binaries missing data such as byte length */
-            if (!DownloadFiles(request.Binaries, writer))
-                return;
-
             long appID = AddAppToBOINC(request, writer);
             if (appID == -1)
                 return;
 
-            if (!AddVersionsToBOINC(request, writer, appID))
-                return;
-
-            writer.WriteLine(new AddAppResponse() {
+            writer.WriteLine(new AddAppResponse()
+            {
                 Success = true,
                 Message = "App added successfully.",
-                Binaries = request.Binaries
+                AppID = appID
             }.ToJSON());
-        }
 
-        public static bool CheckPlatformsExist(List<BinaryInfo> binaries, StreamWriter writer)
-        {
-            foreach(var binary in binaries)
+            if (Global.AlertsWebhookURL != null)
             {
-                if (BoincDatabaseManager.GetPlatformID(binary.Platform) == -1)
-                {
-                    writer.WriteLine(new BaseResponse() { 
-                        Message = string.Format("Platform {0} was not found in the DB.", binary.Platform)
-                    }.ToJSON());
-                    return false;
-                }
+                Webhook.SendMessage(Global.AlertsWebhookURL, string.Format(
+                    "A new app has been created with the codename '{0}'",
+                    request.Codename
+                ));
             }
-            return true;
-        }
-
-        public static bool DownloadFiles(List<BinaryInfo> binaries, StreamWriter writer)
-        {
-            foreach (var binary in binaries)
-            {
-                int result = binary.Download();
-                if (result == -1)
-                {
-                    writer.WriteLine(new BaseResponse() { Message = "SHA256 hash mismatch for one of the files downloaded." }.ToJSON());
-                    return false;
-                }
-                else if (result != 1)
-                {
-                    writer.WriteLine(new BaseResponse() { Message = "An unknown error occurred when downloading a file." }.ToJSON());
-                    return false;
-                }
-            }
-            return true;
         }
 
         public static long AddAppToBOINC(AddAppRequest request, StreamWriter writer)
@@ -106,49 +64,11 @@ namespace ChadWrapper.Handlers
             }
             else if (appID == -2)
             {
-                Console.WriteLine("App {0} already exists in DB.", request.Codename);
-                AppInfo app = AppInfo.GetFromCodename(request.Codename);
-                if (app == null)
-                {
-                    writer.WriteLine(new BaseResponse() { Message = "Could not retrieve existing app info from the BOINC DB." }.ToJSON());
-                    return -1;
-                }
-                else
-                    appID = app.ID;
+                writer.WriteLine(new BaseResponse() { Message = "Codename already exists in the DB." }.ToJSON());
+                return -1;
             }
 
             return appID;
-        }
-
-        public static bool AddVersionsToBOINC(AddAppRequest request, StreamWriter writer, long appID)
-        {
-            foreach (BinaryInfo binary in request.Binaries)
-            {
-                string xml = GenerateXML(binary, request.Codename);
-
-                if(!BoincDatabaseManager.AddAppVersion(appID, binary.VersionNumber, 1, xml.ToString())) {
-                    writer.WriteLine(new BaseResponse() { Message = "Failed to add app version." }.ToJSON());
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static string GenerateXML(BinaryInfo binary, string codename)
-        {
-            StringBuilder xml = new StringBuilder();
-            AppVersion version = new AppVersion();
-            version.Name = codename;
-            version.VersionNumber = binary.VersionNumber;
-            version.Reference = new FileReference()
-            {
-                FileName = new Uri(binary.BinaryURL).Segments.Last()
-            };
-
-            xml.Append(binary.ToBoincFormat().Serialize());
-            xml.Append("\n");
-            xml.Append(version.Serialize());
-            return xml.ToString();
         }
     }
 }

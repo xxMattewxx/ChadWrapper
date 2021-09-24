@@ -30,26 +30,28 @@ namespace ChadWrapper.Boinc
             }
             catch (MySqlException e)
             {
+                Console.WriteLine(e);
                 if (e.ErrorCode == MySqlErrorCode.DuplicateKeyEntry)
                     return -2;
             }
-            catch { }
+            catch (Exception e) { Console.WriteLine(e); }
 
             return -1;
         }
 
-        public static bool AddAppVersion(long appID, int versionNumber, int platformID, string xml)
+        public static bool AddAppVersion(long appID, int versionNumber, int platformID, string xml, string plan_class)
         {
             using MySqlConnection connection = new MySqlConnection(Global.BoincDBConnectionBuilder.ConnectionString);
             connection.Open();
 
             using MySqlCommand command = connection.CreateCommand();
-            command.CommandText = "INSERT INTO app_version (create_time, appid, version_num, platformid, xml_doc) VALUES (@time, @appid, @version_num, @platformid, @xml);";
+            command.CommandText = "INSERT INTO app_version (create_time, appid, version_num, platformid, xml_doc, plan_class) VALUES (@time, @appid, @version_num, @platformid, @xml, @plan_class);";
             command.Parameters.AddWithValue("@time", Utils.ConvertToUnixTimestamp(DateTime.Now));
             command.Parameters.AddWithValue("@appid", appID);
             command.Parameters.AddWithValue("@version_num", versionNumber);
             command.Parameters.AddWithValue("@platformid", platformID);
             command.Parameters.AddWithValue("@xml", xml);
+            command.Parameters.AddWithValue("@plan_class", plan_class);
 
             return command.ExecuteNonQuery() > 0;
         }
@@ -98,7 +100,7 @@ namespace ChadWrapper.Boinc
                 connection.Open();
 
                 using var command = connection.CreateCommand();
-                command.CommandText = "SELECT LENGTH(xml_doc), xml_doc, platformid FROM app_version WHERE appid = @appID;";
+                command.CommandText = "SELECT LENGTH(xml_doc), xml_doc, platformid, plan_class FROM app_version WHERE appid = @appID;";
                 command.Parameters.AddWithValue("@appID", appID);
 
                 using var reader = command.ExecuteReader();
@@ -119,6 +121,11 @@ namespace ChadWrapper.Boinc
                     string xml = Encoding.UTF8.GetString(buffer);
                     BinaryInfo binaryInfo = BinaryInfo.FromBoincXML(xml);
                     binaryInfo.Platform = GetPlatformName(reader.GetInt32(2));
+                    binaryInfo.HardwareAccelerator = reader.GetString(3);
+
+                    if (binaryInfo.HardwareAccelerator == "")
+                        binaryInfo.HardwareAccelerator = "None";
+
                     ret.Add(binaryInfo);
                 }
                 while (reader.Read());

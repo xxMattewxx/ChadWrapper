@@ -12,14 +12,14 @@ namespace ChadWrapper
 
             foreach (var line in File.ReadAllLines(filePath))
             {
-                var parts = line.Split(
-                    '=',
-                    StringSplitOptions.RemoveEmptyEntries);
-
-                if (parts.Length != 2)
+                int firstEqualSymbol = line.IndexOf("=");
+                if (firstEqualSymbol == -1)
                     continue;
 
-                Environment.SetEnvironmentVariable(parts[0].Trim(), parts[1].Trim());
+                string key = line.Substring(0, firstEqualSymbol);
+                string value = line.Substring(firstEqualSymbol + 1);
+
+                Environment.SetEnvironmentVariable(key.Trim(), value.Trim());
             }
         }
     }
