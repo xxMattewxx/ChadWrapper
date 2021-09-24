@@ -73,7 +73,7 @@ namespace ChadWrapper.Handlers.Tasks
                 string rowValues = GenerateRow(app.ID, request.Codename, currOffset, Math.Min(currOffset + request.TaskSize, request.End));
 
                 rowBuffer.Add(rowValues);
-                if (rowBuffer.Count == 1000 && !InsertBuffer(rowBuffer))
+                if (rowBuffer.Count == 10000 && !InsertBuffer(rowBuffer))
                 {
                     writer.WriteLine(new BaseResponse()
                     {
