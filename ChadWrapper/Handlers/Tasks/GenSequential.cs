@@ -137,7 +137,7 @@ namespace ChadWrapper.Handlers.Tasks
 
         public static string GenerateXMLData(Int64 taskID, Int64 start, Int64 end)
         {
-            return $"<workunit><command_line>--task {taskID} --start {start} --end {end}</command_line></workunit>";
+            return $"<workunit>\n<command_line>\n--task {taskID} --start {start} --end {end}\n</command_line>\n</workunit>";
         }
 
         public static bool InsertBuffer(List<string> buffer)
