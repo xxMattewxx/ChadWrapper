@@ -70,7 +70,7 @@ namespace ChadWrapper.Handlers.Tasks
             List<string> rowBuffer = new List<string>();
             while(currOffset + request.TaskSize <= request.End)
             {
-                string rowValues = GenerateRow(app.ID, request.Codename, currOffset, Math.Min(currOffset + request.TaskSize, request.End));
+                string rowValues = GenerateRow(app.ID, request.Codename, request.Start / request.TaskSize + tasksCount, currOffset, Math.Min(currOffset + request.TaskSize, request.End));
 
                 rowBuffer.Add(rowValues);
                 if (rowBuffer.Count == 10000 && !InsertBuffer(rowBuffer))
@@ -118,9 +118,9 @@ namespace ChadWrapper.Handlers.Tasks
             }
         }
 
-        public static string GenerateRow(Int64 appID, string codename, Int64 start, Int64 end)
+        public static string GenerateRow(Int64 appID, string codename, Int64 taskID, Int64 start, Int64 end)
         {
-            string xml = GenerateXMLData(start, end);
+            string xml = GenerateXMLData(taskID, start, end);
             //dear BOINC, this is ridiculous. Please.
             //you're better than that.
             //like...
@@ -135,9 +135,9 @@ namespace ChadWrapper.Handlers.Tasks
             );
         }
 
-        public static string GenerateXMLData(Int64 start, Int64 end)
+        public static string GenerateXMLData(Int64 taskID, Int64 start, Int64 end)
         {
-            return $"<workunit><command_line>--start {start} --end {end}</command_line></workunit>";
+            return $"<workunit><command_line>--task {taskID} --start {start} --end {end}</command_line></workunit>";
         }
 
         public static bool InsertBuffer(List<string> buffer)
